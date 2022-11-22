@@ -4,36 +4,38 @@ namespace Encryption
 {
     class Program
     {
-        public static string EncryptCesarsCipher(int key, string msg)
+        //97-122 in ASCII
+        public static string EncryptCesarsCipher(uint key, string msg)
         {
-            key = key - (key / 95) * 95;
+            key %= 26;
             char[] returnString = msg.ToCharArray();
             for (int i = 0; i < msg.Length; ++i)
             {
-                uint currCharInt = (uint)(returnString[i] + key);
-                if (currCharInt >= 95)
+                char currChar = (char)(returnString[i] + key);
+                if (currChar > 'z')
                 {
-                    currCharInt = currCharInt - (currCharInt / 95) * 95;
+                    currChar = (char)('a' + currChar- 'z' -1);
                 }
-                returnString[i] = (char)(currCharInt+32);
+                returnString[i] = currChar;
             }
             return new string(returnString);
         }
-        public static string DecryptCesarsCipher(int key, string code)
+        public static string DecryptCesarsCipher(uint key, string code)
         {
-            key = key - (key / 95) * 95;
+            key %= 26;
             char[] returnString = code.ToCharArray();
             for (int i = 0; i < code.Length; ++i)
             {
-                uint currCharInt = (uint)(returnString[i] - key);
-                if (currCharInt >= 95)
+                char currChar = (char)(returnString[i] - key);
+                if (currChar < 'a')
                 {
-                    currCharInt = currCharInt - (currCharInt / 95) * 95;
+                    currChar = (char)('z' - ('a' - currChar));
                 }
-                returnString[i] = (char)(currCharInt + 32);
+                returnString[i] = currChar;
             }
             return new string(returnString);
         }
+
         //97-122 in ASCII
         public static string EncryptVigenereCipher(string key, string msg)
         {
@@ -44,9 +46,12 @@ namespace Encryption
             char[] returnString = msg.ToCharArray();
             for(int i = 0; i < msg.Length; ++i)
             {
-                uint currCharInt = (uint)(returnString[i] + (key[i] - 'a'));
-                if (currCharInt > 122) currCharInt = 96 + (currCharInt - 122);
-                returnString[i] = (char)(currCharInt);
+                char currChar = (char)(returnString[i] + (key[i] - 'a'));
+                if (currChar > 'z')
+                {
+                    currChar = (char)('a'+1 + currChar - 'z' - 1);
+                } 
+                returnString[i] = currChar;
             }
             return new string(returnString);
         }
@@ -59,9 +64,12 @@ namespace Encryption
             char[] returnString = msg.ToCharArray();
             for (int i = 0; i < msg.Length; ++i)
             {
-                uint currCharInt = (uint)(returnString[i] - (key[i] - 'a'));
-                if (currCharInt < 97) currCharInt = 123 - (97-currCharInt);
-                returnString[i] = (char)(currCharInt);
+                char currChar = (char)(returnString[i] - (key[i] - 'a'));
+                if (currChar < 'a')
+                {
+                    currChar = (char)('z'+1 - ('a' - currChar));
+                }
+                returnString[i] = currChar;
             }
             return new string(returnString);
         }
@@ -76,13 +84,13 @@ namespace Encryption
             string mode = args[1];
             if (mode == "do" && method=="cesar")
             {
-                Console.WriteLine(EncryptCesarsCipher(int.Parse(args[2]), args[3]));
+                Console.WriteLine(EncryptCesarsCipher(uint.Parse(args[2]), args[3]));
             }
             else if (mode == "undo" && method == "cesar")
             {
-                Console.WriteLine(DecryptCesarsCipher(int.Parse(args[2]), args[3]));
+                Console.WriteLine(DecryptCesarsCipher(uint.Parse(args[2]), args[3]));
             }
-            if (mode == "do" && method == "vigenere")
+            else if (mode == "do" && method == "vigenere")
             {
                 Console.WriteLine(EncryptVigenereCipher(args[2], args[3]));
             }
