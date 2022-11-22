@@ -6,28 +6,61 @@ namespace Encryption
     {
         public static string EncryptCesarsCipher(int key, string msg)
         {
+            key = key - (key / 95) * 95;
             char[] returnString = msg.ToCharArray();
             for (int i = 0; i < msg.Length; ++i)
             {
                 uint currCharInt = (uint)(returnString[i] + key);
-                if(currCharInt >= 128)
+                if (currCharInt >= 95)
                 {
-                    currCharInt = currCharInt - (currCharInt / 128) * 128;
+                    currCharInt = currCharInt - (currCharInt / 95) * 95;
                 }
-                returnString[i] = (char)(currCharInt);
+                returnString[i] = (char)(currCharInt+32);
             }
             return new string(returnString);
         }
         public static string DecryptCesarsCipher(int key, string code)
         {
+            key = key - (key / 95) * 95;
             char[] returnString = code.ToCharArray();
             for (int i = 0; i < code.Length; ++i)
             {
                 uint currCharInt = (uint)(returnString[i] - key);
-                if (currCharInt >= 128)
+                if (currCharInt >= 95)
                 {
-                    currCharInt = currCharInt - (currCharInt / 128) * 128;
+                    currCharInt = currCharInt - (currCharInt / 95) * 95;
                 }
+                returnString[i] = (char)(currCharInt + 32);
+            }
+            return new string(returnString);
+        }
+        //97-122 in ASCII
+        public static string EncryptVigenereCipher(string key, string msg)
+        {
+            while(key.Length < msg.Length)
+            {
+                key += key;
+            }
+            char[] returnString = msg.ToCharArray();
+            for(int i = 0; i < msg.Length; ++i)
+            {
+                uint currCharInt = (uint)(returnString[i] + (key[i] - 'a'));
+                if (currCharInt > 122) currCharInt = 96 + (currCharInt - 122);
+                returnString[i] = (char)(currCharInt);
+            }
+            return new string(returnString);
+        }
+        public static string DecryptVigenereCipher(string key, string msg)
+        {
+            while (key.Length < msg.Length)
+            {
+                key += key;
+            }
+            char[] returnString = msg.ToCharArray();
+            for (int i = 0; i < msg.Length; ++i)
+            {
+                uint currCharInt = (uint)(returnString[i] - (key[i] - 'a'));
+                if (currCharInt < 97) currCharInt = 123 - (97-currCharInt);
                 returnString[i] = (char)(currCharInt);
             }
             return new string(returnString);
@@ -48,6 +81,14 @@ namespace Encryption
             else if (mode == "undo" && method == "cesar")
             {
                 Console.WriteLine(DecryptCesarsCipher(int.Parse(args[2]), args[3]));
+            }
+            if (mode == "do" && method == "vigenere")
+            {
+                Console.WriteLine(EncryptVigenereCipher(args[2], args[3]));
+            }
+            else if (mode == "undo" && method == "vigenere")
+            {
+                Console.WriteLine(DecryptVigenereCipher(args[2], args[3]));
             }
             else
             {
