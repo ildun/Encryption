@@ -29,7 +29,7 @@ namespace Encryption
                 char currChar = (char)(returnString[i] - key);
                 if (currChar < 'a')
                 {
-                    currChar = (char)('z' - ('a' - currChar));
+                    currChar = (char)('z' + 1 - ('a' - currChar));
                 }
                 returnString[i] = currChar;
             }
@@ -49,7 +49,7 @@ namespace Encryption
                 char currChar = (char)(returnString[i] + (key[i] - 'a'));
                 if (currChar > 'z')
                 {
-                    currChar = (char)('a'+1 + currChar - 'z' - 1);
+                    currChar = (char)('a' + currChar - 'z' - 1);
                 } 
                 returnString[i] = currChar;
             }
@@ -74,7 +74,7 @@ namespace Encryption
             return new string(returnString);
         }
         static void Main(string[] args)
-        {
+        {   
             if (args.Length < 4)
             {
                 Console.WriteLine("Not enough or invalid command line arguments.");
